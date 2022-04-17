@@ -61,15 +61,13 @@ class StripeWorker implements Callable<StripeWorkerResult> {
         // Change getRow() or getColumn() to corresponding getRowCopy() or
         // getColumnCopy() to ensure everything is safe
         IntStream.range(0, matrix1.getDimY()).forEach(i -> {
-            IntStream.range(offset, matrix2.getDimX() + offset).forEach(j -> {
-                values.add(IntStream.range(0, matrix1.getDimX())
-                        .mapToObj(idx -> (matrix1.getRow(i, false).get(idx)
-                                * matrix2.getColumn(j % matrix2.getDimX(), false).get(idx)))
-                        .reduce((a, b) -> a + b)
-                        .get());
-            });
+            values.add(IntStream.range(0, matrix1.getDimX())
+                    .mapToObj(idx -> (matrix1.getRow(i, false).get(idx)
+                            * matrix2.getColumn((i + offset) % matrix2.getDimX(), false).get(idx)))
+                    .reduce((a, b) -> a + b)
+                    .get());
         });
-        System.out.println("Thread with offset " + this.offset + " completed!");
+        
         return this.res.setValues(values);
     }
 }

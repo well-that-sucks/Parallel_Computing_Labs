@@ -39,7 +39,7 @@ class StripeMultiplier extends Multiplier {
         pool.shutdown();
 
         long duration = (System.nanoTime() - startTime);
-        System.out.println("Stripe: done!");
+
         return new Pair<Matrix, Long>(new Matrix(matrixValues), duration);
     }
 }
