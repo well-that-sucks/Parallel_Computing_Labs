@@ -1,9 +1,7 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.stream.IntStream;
 
 class Matrix {
-
     private int dimX;
     private int dimY;
     private ArrayList<ArrayList<Double>> elements;
@@ -14,25 +12,21 @@ class Matrix {
         this.dimY = elements.size();
         this.dimX = elements.get(0).size();
         this.elements = new ArrayList<ArrayList<Double>>();
-        IntStream.range(0, this.dimY).forEach(idx -> this.elements.add(new ArrayList<Double>(this.dimX)));
-        try {
-            Collections.copy(this.elements, elements);
-            makeTransposedMatrix();
-        } catch (IndexOutOfBoundsException | UnsupportedOperationException e) {
-            e.printStackTrace();
-        }
-
+        IntStream.range(0, this.dimY).forEach(i -> {
+            ArrayList<Double> row = new ArrayList<Double>();
+            row.addAll(elements.get(i));
+            this.elements.add(row);
+        });
+        makeTransposedMatrix();
     }
 
     private void makeTransposedMatrix() {
         ArrayList<ArrayList<Double>> telements = new ArrayList<ArrayList<Double>>();
-        for (int j = 0; j < this.dimX; ++j) {
-            ArrayList<Double> tRow = new ArrayList<Double>();
-            for (int i = 0; i < this.dimY; ++i) {
-                tRow.add(this.elements.get(i).get(j));
-            }
-            telements.add(tRow);
-        }
+        IntStream.range(0, this.dimX).forEach(j -> {
+            ArrayList<Double> row = new ArrayList<Double>();
+            IntStream.range(0, this.dimY).forEach(i -> row.add(this.elements.get(i).get(j)));
+            telements.add(row);
+        });
         this.elementsTransposed = telements;
     }
 
@@ -48,13 +42,19 @@ class Matrix {
         return this.dimY;
     }
 
-    public ArrayList<Double> getRow(int rowIndex) {
+    public ArrayList<Double> getRow(int rowIndex, boolean performCopying) {
+        if (!performCopying) {
+            return this.elements.get(rowIndex);
+        }
         ArrayList<Double> returnRow = new ArrayList<Double>();
         returnRow.addAll(this.elements.get(rowIndex));
         return returnRow;
     }
 
-    public ArrayList<Double> getColumn(int columnIndex) {
+    public ArrayList<Double> getColumn(int columnIndex, boolean performCopying) {
+        if (!performCopying) {
+            return this.elementsTransposed.get(columnIndex);
+        }
         ArrayList<Double> returnCol = new ArrayList<Double>();
         returnCol.addAll(this.elementsTransposed.get(columnIndex));
         return returnCol;
@@ -67,5 +67,4 @@ class Matrix {
             System.out.println();
         });
     }
-
 }

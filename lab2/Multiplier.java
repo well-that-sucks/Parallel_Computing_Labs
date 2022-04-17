@@ -1,5 +1,4 @@
 abstract class Multiplier {
-
     public Pair<Matrix, Long> run(Matrix matrix1, Matrix matrix2) throws DimensionsNotMatchingException {
         if (!checkDimensions(matrix1, matrix2)) {
             throw new DimensionsNotMatchingException("Matricies dimensions have to match each other!");
@@ -12,5 +11,4 @@ abstract class Multiplier {
     }
 
     abstract protected Pair<Matrix, Long> multiply(Matrix matrix1, Matrix matrix2);
-
 }

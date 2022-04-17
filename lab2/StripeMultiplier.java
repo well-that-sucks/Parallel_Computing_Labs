@@ -15,12 +15,8 @@ class StripeMultiplier extends Multiplier {
         // ExecutorService pool = Executors.newFixedThreadPool(1);
         ArrayList<Future<StripeWorkerResult>> fres = new ArrayList<Future<StripeWorkerResult>>();
 
-        for (int j = 0; j < matrix2.getDimX(); ++j) {
-            for (int i = 0; i < matrix1.getDimY(); ++i) {
-                StripeWorker sw = new StripeWorker(matrix1, matrix2, i, j);
-                fres.add(pool.submit(sw));
-            }
-        }
+        IntStream.range(0, matrix2.getDimX())
+                .forEach(idx -> fres.add(pool.submit(new StripeWorker(matrix1, matrix2, idx))));
 
         Double[][] tempValues = new Double[matrix1.getDimY()][];
         IntStream.range(0, matrix1.getDimY()).forEach(idx -> tempValues[idx] = new Double[matrix2.getDimX()]);
@@ -28,7 +24,11 @@ class StripeMultiplier extends Multiplier {
         fres.forEach(future -> {
             try {
                 StripeWorkerResult swres = future.get();
-                tempValues[swres.getPosY()][swres.getPosX()] = swres.getValue();
+                swres.getValues(false).stream().forEach(value -> {
+                    IntStream.range(0, matrix1.getDimY()).forEach(idx -> {
+                        tempValues[idx][(idx + swres.getOffset()) % matrix2.getDimX()] = value;
+                    });
+                });
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -39,8 +39,7 @@ class StripeMultiplier extends Multiplier {
         pool.shutdown();
 
         long duration = (System.nanoTime() - startTime);
-        // System.out.printf("Multiplication took %f seconds.%n", duration / 1000000000.0);
-
+        System.out.println("Stripe: done!");
         return new Pair<Matrix, Long>(new Matrix(matrixValues), duration);
     }
 }

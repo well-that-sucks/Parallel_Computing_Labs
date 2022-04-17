@@ -29,6 +29,7 @@ class Main {
          * }
          */
         HashMap<String, Multiplier> multipliers = new HashMap<String, Multiplier>();
+        multipliers.put("Serial multiplier", new SerialMultiplier());
         multipliers.put("Stripe multiplier", new StripeMultiplier());
         Tester tester = new Tester(multipliers);
         tester.test();
