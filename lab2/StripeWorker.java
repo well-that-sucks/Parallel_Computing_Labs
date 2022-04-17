@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
-import java.util.stream.IntStream;
 
 class StripeWorkerResult {
     private ArrayList<Double> values;
@@ -53,23 +52,14 @@ class StripeWorker implements Callable<StripeWorkerResult> {
 
     @Override
     public StripeWorkerResult call() {
-        if (this.offset > 100) {
-            return this.res;
-        }
         ArrayList<Double> values = new ArrayList<Double>();
-        // In favour of performance there is used reference passing and assigning
-        // Change getRow() or getColumn() to corresponding getRowCopy() or
-        // getColumnCopy() to ensure everything is safe
-        IntStream.range(0, matrix1.getDimY()).forEach(i -> {
-            IntStream.range(offset, matrix2.getDimX() + offset).forEach(j -> {
-                values.add(IntStream.range(0, matrix1.getDimX())
-                        .mapToObj(idx -> (matrix1.getRow(i, false).get(idx)
-                                * matrix2.getColumn(j % matrix2.getDimX(), false).get(idx)))
-                        .reduce((a, b) -> a + b)
-                        .get());
-            });
-        });
-        System.out.println("Thread with offset " + this.offset + " completed!");
+        for (int i = 0; i < matrix1.getDimY(); ++i) {
+            double sum = 0;
+            for (int j = 0; j < matrix1.getDimX(); ++j) {
+                sum += matrix1.getRow(i, false)[j] * matrix2.getColumn((i + offset) % matrix2.getDimX(), false)[j];
+            }
+            values.add(sum);
+        }
         return this.res.setValues(values);
     }
 }

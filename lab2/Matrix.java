@@ -1,36 +1,29 @@
-import java.util.ArrayList;
-import java.util.stream.IntStream;
+import java.util.Arrays;
 
 class Matrix {
     private int dimX;
     private int dimY;
-    private ArrayList<ArrayList<Double>> elements;
-    private ArrayList<ArrayList<Double>> elementsTransposed;
+    private double[][] elements;
+    private double[][] elementsTransposed;
 
-    public Matrix(ArrayList<ArrayList<Double>> elements) {
-        // Add check whether 2nd dimension size is consistent
-        this.dimY = elements.size();
-        this.dimX = elements.get(0).size();
-        this.elements = new ArrayList<ArrayList<Double>>();
-        IntStream.range(0, this.dimY).forEach(i -> {
-            ArrayList<Double> row = new ArrayList<Double>();
-            row.addAll(elements.get(i));
-            this.elements.add(row);
-        });
+    public Matrix(double[][] values) {
+        this.dimY = values.length;
+        this.dimX = values[0].length;
+        this.elements = Arrays.copyOf(values, values.length);
         makeTransposedMatrix();
     }
 
     private void makeTransposedMatrix() {
-        ArrayList<ArrayList<Double>> telements = new ArrayList<ArrayList<Double>>();
-        IntStream.range(0, this.dimX).forEach(j -> {
-            ArrayList<Double> row = new ArrayList<Double>();
-            IntStream.range(0, this.dimY).forEach(i -> row.add(this.elements.get(i).get(j)));
-            telements.add(row);
-        });
-        this.elementsTransposed = telements;
+        this.elementsTransposed = new double[this.dimX][];
+        for (int j = 0; j < this.dimX; ++j) {
+            this.elementsTransposed[j] = new double[this.dimY];
+            for (int i = 0; i < this.dimY; ++i) {
+                this.elementsTransposed[j][i] = this.elements[i][j];
+            }
+        }
     }
 
-    public ArrayList<ArrayList<Double>> getTransposedMatrix() {
+    public double[][] getTransposedMatrix() {
         return this.elementsTransposed;
     }
 
@@ -42,29 +35,27 @@ class Matrix {
         return this.dimY;
     }
 
-    public ArrayList<Double> getRow(int rowIndex, boolean performCopying) {
+    public double[] getRow(int rowIndex, boolean performCopying) {
         if (!performCopying) {
-            return this.elements.get(rowIndex);
+            return this.elements[rowIndex];
         }
-        ArrayList<Double> returnRow = new ArrayList<Double>();
-        returnRow.addAll(this.elements.get(rowIndex));
-        return returnRow;
+        return Arrays.copyOf(this.elements[rowIndex], this.elements[rowIndex].length);
     }
 
-    public ArrayList<Double> getColumn(int columnIndex, boolean performCopying) {
+    public double[] getColumn(int columnIndex, boolean performCopying) {
         if (!performCopying) {
-            return this.elementsTransposed.get(columnIndex);
+            return this.elementsTransposed[columnIndex];
         }
-        ArrayList<Double> returnCol = new ArrayList<Double>();
-        returnCol.addAll(this.elementsTransposed.get(columnIndex));
-        return returnCol;
+        return Arrays.copyOf(this.elementsTransposed[columnIndex], this.elementsTransposed[columnIndex].length);
     }
 
     public void print() {
         System.out.println("Resulting matrix:");
-        this.elements.forEach(arr -> {
-            arr.forEach(element -> System.out.print(element + " "));
+        for (int i = 0; i < this.dimY; ++i) {
+            for (int j = 0; j < this.dimX; ++j) {
+                System.out.print(this.elements[i][j] + " ");
+            }
             System.out.println();
-        });
+        }
     }
 }

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,35 +10,36 @@ class StripeMultiplier extends Multiplier {
     @Override
     protected Pair<Matrix, Long> multiply(Matrix matrix1, Matrix matrix2) {
         long startTime = System.nanoTime();
-        ExecutorService pool = Executors.newCachedThreadPool();
-        // ExecutorService pool = Executors.newFixedThreadPool(1);
+        ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         ArrayList<Future<StripeWorkerResult>> fres = new ArrayList<Future<StripeWorkerResult>>();
 
         IntStream.range(0, matrix2.getDimX())
                 .forEach(idx -> fres.add(pool.submit(new StripeWorker(matrix1, matrix2, idx))));
 
-        Double[][] tempValues = new Double[matrix1.getDimY()][];
-        IntStream.range(0, matrix1.getDimY()).forEach(idx -> tempValues[idx] = new Double[matrix2.getDimX()]);
+        double[][] values = new double[matrix1.getDimY()][];
+        IntStream.range(0, matrix1.getDimY()).forEach(idx -> values[idx] = new double[matrix2.getDimX()]);
 
+        ArrayList<StripeWorkerResult> swResults = new ArrayList<StripeWorkerResult>();
         fres.forEach(future -> {
             try {
-                StripeWorkerResult swres = future.get();
-                swres.getValues(false).stream().forEach(value -> {
-                    IntStream.range(0, matrix1.getDimY()).forEach(idx -> {
-                        tempValues[idx][(idx + swres.getOffset()) % matrix2.getDimX()] = value;
-                    });
-                });
+                swResults.add(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         });
 
-        ArrayList<ArrayList<Double>> matrixValues = new ArrayList<ArrayList<Double>>(
-                Arrays.asList(tempValues).stream().map(arr -> new ArrayList<Double>(Arrays.asList(arr))).toList());
+        for (StripeWorkerResult swres : swResults) {
+            int offset = swres.getOffset();
+            ArrayList<Double> tvalues = swres.getValues(false);
+            for (int i = 0; i < matrix1.getDimY(); ++i) {
+                values[i][(i + offset) % matrix2.getDimX()] = tvalues.get(i);
+            }
+        }
+
         pool.shutdown();
 
         long duration = (System.nanoTime() - startTime);
-        System.out.println("Stripe: done!");
-        return new Pair<Matrix, Long>(new Matrix(matrixValues), duration);
+
+        return new Pair<Matrix, Long>(new Matrix(values), duration);
     }
 }

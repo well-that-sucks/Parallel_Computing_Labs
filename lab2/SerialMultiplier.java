@@ -1,23 +1,22 @@
-import java.util.ArrayList;
-import java.util.stream.IntStream;
-
 class SerialMultiplier extends Multiplier {
 
     @Override
     protected Pair<Matrix, Long> multiply(Matrix matrix1, Matrix matrix2) {
         long startTime = System.nanoTime();
 
-        ArrayList<ArrayList<Double>> matrixValues = new ArrayList<ArrayList<Double>>();
-        IntStream.range(0, matrix1.getDimY()).forEach(i -> {
-            System.out.println("Line " + i);
-            ArrayList<Double> row = new ArrayList<Double>();
-            IntStream.range(0, matrix2.getDimX()).forEach(j -> {
-                row.add(IntStream.range(0, matrix1.getDimX())
-                        .mapToDouble(idx -> matrix1.getRow(i, false).get(idx) * matrix2.getColumn(j, false).get(idx))
-                        .reduce((a, b) -> a + b).getAsDouble());
-            });
-            matrixValues.add(row);
-        });
+        double[][] matrixValues = new double[matrix1.getDimY()][];
+        for (int i = 0; i < matrix1.getDimY(); ++i) {
+            matrixValues[i] = new double[matrix2.getDimX()];
+            for (int j = 0; j < matrix2.getDimX(); ++j) {
+                double sum = 0;
+                double[] row = matrix1.getRow(i, false);
+                double[] col = matrix2.getColumn(j, false);
+                for (int k = 0; k < matrix1.getDimX(); ++k) {
+                    sum += row[k] * col[k];
+                }
+                matrixValues[i][j] = sum;
+            }
+        }
 
         long duration = (System.nanoTime() - startTime);
 

@@ -35,23 +35,22 @@ class Tester {
     }
 
     private void testGivenSize(String testName, int dimY1, int dimX1, int dimY2, int dimX2) {
-        Matrix matrix1 = MatrixGenerator.generate(dimY1, dimX1, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
-        Matrix matrix2 = MatrixGenerator.generate(dimY2, dimX2, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
-        System.out.println("Generation finished: " + testName);
         HashMap<String, Long> results = new HashMap<String, Long>();
         this.multipliers.forEach((k, v) -> {
+            Matrix matrix1 = MatrixGenerator.generate(dimY1, dimX1, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+            Matrix matrix2 = MatrixGenerator.generate(dimY2, dimX2, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
             try {
                 results.put(k, v.run(matrix1, matrix2).getValue());
             } catch (DimensionsNotMatchingException e) {
                 e.printStackTrace();
             }
         });
-        this.result += transfromResults(testName, results);
+        this.result += transfromResults(testName, results) + "\n";
     }
 
     private String transfromResults(String testName, HashMap<String, Long> results) {
         StringBuffer res = new StringBuffer(testName + "\n");
-        results.forEach((k, v) -> res.append(k + ": " + (v / 1000000000.0) + " seconds\n\n"));
+        results.forEach((k, v) -> res.append(k + ": " + (v / 1000000000.0) + " seconds\n"));
         return res.toString();
     }
 
