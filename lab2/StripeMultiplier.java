@@ -27,7 +27,6 @@ class StripeMultiplier extends Multiplier {
                 e.printStackTrace();
             }
         });
-        System.out.println(swResults.size());
 
         for (StripeWorkerResult swres : swResults) {
             int offset = swres.getOffset();
@@ -41,6 +40,6 @@ class StripeMultiplier extends Multiplier {
 
         long duration = (System.nanoTime() - startTime);
 
-        return new Pair<Matrix, Long>(new Matrix(values), duration);
+        return new Pair<Matrix, Long>(new Matrix(values, matrix1.getDimY(), matrix2.getDimX()), duration);
     }
 }

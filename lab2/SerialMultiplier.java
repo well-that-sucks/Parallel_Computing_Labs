@@ -20,6 +20,6 @@ class SerialMultiplier extends Multiplier {
 
         long duration = (System.nanoTime() - startTime);
 
-        return new Pair<Matrix, Long>(new Matrix(matrixValues), duration);
+        return new Pair<Matrix, Long>(new Matrix(matrixValues, matrix1.getDimY(), matrix2.getDimX()), duration);
     }
 }

@@ -17,6 +17,6 @@ class MatrixGenerator {
                 matrixValues[i][j] = arr[i * dimY + j];
             }
         }
-        return new Matrix(matrixValues);
+        return new Matrix(matrixValues, dimY, dimX);
     }
 }
