@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 class StripeWorkerResult {
-    private ArrayList<Double> values;
+    private final ArrayList<Double> values;
     private final int offset;
 
     public StripeWorkerResult(ArrayList<Double> values, int offset) {
@@ -34,7 +34,6 @@ class StripeWorkerResult {
         this.values.addAll(values);
         return this;
     }
-
 }
 
 class StripeWorker implements Callable<StripeWorkerResult> {

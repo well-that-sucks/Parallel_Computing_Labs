@@ -27,6 +27,7 @@ class StripeMultiplier extends Multiplier {
                 e.printStackTrace();
             }
         });
+        System.out.println(swResults.size());
 
         for (StripeWorkerResult swres : swResults) {
             int offset = swres.getOffset();

@@ -23,7 +23,7 @@ class Tester {
     public void test() {
         testGivenSize("Small size", 50, 50, 50, 50);
         testGivenSize("Medium size", 500, 500, 500, 500);
-        // testGivenSize("Large size", 5000, 5000, 5000, 5000);
+        testGivenSize("Large size", 1000, 1000, 1000, 1000);
         printResult();
         if (!filename.equals("")) {
             try {
