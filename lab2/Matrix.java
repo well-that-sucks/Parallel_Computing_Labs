@@ -13,7 +13,7 @@ class Matrix {
         for (int i = 0; i < dimY; ++i) {
             this.elements[i] = Arrays.copyOf(values[i], dimX);
         }
-        makeTransposedMatrix();
+        buildTransposedMatrix();
     }
 
     public Matrix(int dimY, int dimX) {
@@ -26,13 +26,34 @@ class Matrix {
                 this.elements[i][j] = 0;
             }
         }
-        makeTransposedMatrix();
+        buildTransposedMatrix();
     }
 
-    private void makeTransposedMatrix() {
+    public Matrix(AtomicDouble[][] values, int dimY, int dimX) {
+        this.dimY = dimY;
+        this.dimX = dimX;
+        this.elements = new double[dimY][];
+        for (int i = 0; i < dimY; ++i) {
+            this.elements[i] = new double[dimX];
+            for (int j = 0; j < dimX; ++j) {
+                this.elements[i][j] = values[i][j].get();
+            }
+        }
+        buildTransposedMatrix();
+    }
+
+    private void buildTransposedMatrix() {
         this.elementsTransposed = new double[this.dimX][];
         for (int j = 0; j < this.dimX; ++j) {
             this.elementsTransposed[j] = new double[this.dimY];
+            for (int i = 0; i < this.dimY; ++i) {
+                this.elementsTransposed[j][i] = this.elements[i][j];
+            }
+        }
+    }
+
+    public void updateTransposedMatrix() {
+        for (int j = 0; j < this.dimX; ++j) {
             for (int i = 0; i < this.dimY; ++i) {
                 this.elementsTransposed[j][i] = this.elements[i][j];
             }
@@ -82,5 +103,27 @@ class Matrix {
             }
             System.out.println();
         }
+    }
+
+    public double[][] getElements() {
+        return this.elements;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Matrix comparedMatrix = (Matrix) obj;
+        if (this.dimX != comparedMatrix.getDimX() || this.dimY != comparedMatrix.getDimY()) {
+            return false;
+        }
+
+        return Arrays.deepEquals(this.elements, comparedMatrix.getElements());
     }
 }
